@@ -124,12 +124,28 @@ These implementations follow the repository interfaces, so switching between **M
   - Switching databases (or adding a new one) requires no change in the controller layer — only the factory logic.
   - Cache integration is transparent to services and controllers.
 
-Example route:
+## 📌 API Routes
 
-```ts
-router.post("/products", (req, res) => productController.create(req, res));
-router.post("/orders", (req, res) => orderController.create(req, res));
-```
+The API exposes two main resources: **Orders** and **Products**.  
+Each resource has its own set of endpoints managed by controllers.
+
+### 🛒 Order Routes (`/orders`)
+
+- `POST /orders` → Create a new order
+- `GET /orders` → List all orders
+- `GET /orders/:id` → Get an order by ID
+- `PATCH /orders/:id/status` → Update the status of an order
+- `POST /orders/:id/items` → Add a product item to an order
+- `DELETE /orders/:id/items/:productId` → Remove a product item from an order
+- `DELETE /orders/:id` → Delete an order
+
+### 📦 Product Routes (`/products`)
+
+- `POST /products` → Create a new product
+- `GET /products` → List all products
+- `GET /products/:id` → Get a product by ID
+- `PUT /products/:id` → Update a product
+- `DELETE /products/:id` → Delete a product
 
 ---
 
