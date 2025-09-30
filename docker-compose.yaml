@@ -1,0 +1,67 @@
+version: "3.8"
+services:
+  db_mysql:
+    image: mysql:8.0
+    container_name: db_mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: clean_arch_db
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./docker-entrypoint/mysql_db_init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    networks:
+      - backend
+
+  adminer:
+    image: adminer
+    container_name: adminer
+    ports:
+      - "8080:8080"
+    networks:
+      - backend
+
+  redis:
+    image: redis/redis-stack:latest
+    ports:
+      - "6379:6379"
+      - "8081:8001"
+    environment:
+      - REDIS_ARGS=--appendonly yes
+    volumes:
+      - redis_data:/data
+    networks:
+      - backend
+
+  api:
+    build: .
+    container_name: clean-arch-api
+    ports:
+      - "3000:3000"
+    environment:
+      - DB_TYPE=mysql
+      - DB_HOST=db_mysql
+      - DB_PORT=3306
+      - DB_USER=root
+      - DB_PASSWORD=root
+      - DB_NAME=clean_arch_db
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    depends_on:
+      - db_mysql
+      - redis
+    volumes:
+      - .:/app
+      - /app/node_modules
+    networks:
+      - backend
+
+networks:
+  backend:
+    driver: bridge
+volumes:
+  mysql_data:
+    driver: local
+  redis_data:
+    driver: local
